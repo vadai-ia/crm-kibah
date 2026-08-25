@@ -56,6 +56,12 @@ export function PdfBuilder() {
       .catch(() => {})
   }, [selectedProperties])
 
+  const doReset = useCallback(() => {
+    clearSelection()
+    setAsesorName(defaultAsesorName)
+    setClienteName('')
+  }, [clearSelection, defaultAsesorName])
+
   const handleGenerate = useCallback(async () => {
     if (count === 0) return
     setGenerating(true)
@@ -72,21 +78,16 @@ export function PdfBuilder() {
       a.click()
       URL.revokeObjectURL(url)
       setToast({ message: 'PDF descargado', type: 'success' })
+      doReset()
     } catch (err) {
       console.error('PDF generation error:', err)
       setToast({ message: 'Error al generar PDF', type: 'error' })
     } finally {
       setGenerating(false)
     }
-  }, [count, selectedProperties, imageMap, asesorName, clienteName])
+  }, [count, selectedProperties, imageMap, asesorName, clienteName, doReset])
 
   const hasData = count > 0 || clienteName.trim() !== '' || (asesorName !== defaultAsesorName && asesorName !== '')
-
-  const doReset = useCallback(() => {
-    clearSelection()
-    setAsesorName(defaultAsesorName)
-    setClienteName('')
-  }, [clearSelection, defaultAsesorName])
 
   const handleNewPdf = useCallback(() => {
     if (hasData) {

@@ -29,3 +29,9 @@
 - **Causa:** Se asumió que baños/recámaras/estacionamiento eran siempre enteros.
 - **Fix:** Removido `.int()` de num_banos, num_recamaras, estacionamiento en el schema Zod.
 - **Regla:** Solo usar `.int()` cuando el campo sea ESTRICTAMENTE entero. Baños/recámaras/estacionamiento pueden ser decimales (2.5 baños = medio baño).
+
+## 6. Selección de PDF persistía después de generar el PDF
+- **Error:** Tras generar y descargar el PDF, el banner flotante "X propiedades — Generar PDF" seguía visible en Propiedades y la selección quedaba activa.
+- **Causa:** La selección vive en `sessionStorage` (`usePdfSelection`) y `handleGenerate` en `PdfBuilder.tsx` nunca la limpiaba; solo "Nuevo PDF" o "Limpiar selección" lo hacían.
+- **Fix:** Llamar `doReset()` (limpia selección, cliente y restaura asesor) después de una generación exitosa en `handleGenerate`. Solo en éxito — si falla la generación, la selección se conserva.
+- **Regla:** Cuando un flujo "completa" una acción (generar/enviar/guardar), limpiar su estado transitorio persistido (sessionStorage/localStorage) en el camino de éxito, nunca en el de error.
